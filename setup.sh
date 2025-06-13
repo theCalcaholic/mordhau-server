@@ -22,6 +22,10 @@ read -rp 'Enter a server name: ' SERVER_NAME
 read -rp 'Enter a server password: ' SERVER_PASSWORD
 read -rp 'Enter a admin password: ' ADMIN_PASSWORD
 
+export SERVER_NAME
+export SERVER_PASSWORD
+export ADMIN_PASSWORD
+
 mkdir -p mordhau
 cd mordhau
 wget https://raw.githubusercontent.com/theCalcaholic/mordhau-server/refs/heads/main/compose.yml -O ./compose.yml

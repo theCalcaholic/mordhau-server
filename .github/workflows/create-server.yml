@@ -13,11 +13,11 @@ on:
         default: 6
         type: number
       server_password:
-        description: 'password for joining the server'
+        description: 'password for joining the server (optional)'
         required: false
         type: string
       admin_password:
-        description: 'password for executing admin commands'
+        description: 'password for executing admin commands (optional)'
         required: false
         type: string
 
@@ -50,7 +50,7 @@ jobs:
           kill_after_6h &
 
           sed -i \
-              -e 's/STARTUP_TIME=.*/STARTUP_TIME=${{ inputs.startup_time }}/' \
+              -e 's/STARTUP_TIMEOUT=.*/STARTUP_TIMEOUT=${{ inputs.startup_timeout }}/' \
               -e "s/server_name/${SERVER_NAME}/" \
               -e "s/server_password/${SERVER_PASSWORD}/" \
               -e "s/admin_password/${ADMIN_PASSWORD}/" \
