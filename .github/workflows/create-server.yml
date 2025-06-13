@@ -7,11 +7,28 @@ on:
         required: false
         default: 1200
         type: number
+      auto_shutdown_time:
+        description: 'time (in hours) after which the server is shut down automatically'
+        required: false
+        default: 6
+        type: number
+      server_password:
+        description: 'password for joining the server'
+        required: false
+        type: string
+      admin_password:
+        description: 'password for executing admin commands'
+        required: false
+        type: string
+
 jobs:
   start_server:
     environment: default
     runs-on: ubuntu-latest
     env:
+      SERVER_NAME: ${{ vars.SERVER_NAME }}
+      SERVER_PASSWORD: ${{ inputs.server_password || secrets.SERVER_PASSWORD }}
+      ADMIN_PASSWORD: ${{ inputs.admin_password || secrets.ADMIN_PASSWORD }}
       SSH_KEY_NAME_CICD: ${{ vars.SSH_KEY_NAME_CICD }}
       SSH_KEY_NAME_ADMIN: ${{ vars.SSH_KEY_NAME_ADMIN }}
       SSH_KEY_CICD: ${{ secrets.SSH_KEY_CICD }}
@@ -27,10 +44,17 @@ jobs:
           set -ex
 
           kill_after_6h() {
-            sleep $(( 3600 * 6 ))
+            sleep $(( 3600 * ${{ inputs.auto_shutdown_time }} ))
             exit 1
           }
           kill_after_6h &
+
+          sed -i \
+              -e 's/STARTUP_TIME=.*/STARTUP_TIME=${{ inputs.startup_time }}/' \
+              -e "s/server_name/${SERVER_NAME}/" \
+              -e "s/server_password/${SERVER_PASSWORD}/" \
+              -e "s/admin_password/${ADMIN_PASSWORD}/" \
+              cloudinit.yaml
 
           hcloud=(docker run --rm -v "$PWD:/workingdir" -w /workingdir -e HCLOUD_TOKEN hetznercloud/cli:latest)
           "${hcloud[@]}" server create \

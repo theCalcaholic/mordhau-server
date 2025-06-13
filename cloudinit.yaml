@@ -8,6 +8,5 @@ package_update: true
 package_upgrade: false
 runcmd:
   - export STARTUP_TIMEOUT=3600
-#  - bash -c '{ echo "laneburg" && echo "server_pw" && echo "FYClBPhSISn7"; } | bash -x <(wget https://raw.githubusercontent.com/theCalcaholic/mordhau-server/refs/heads/main/setup.sh -O -)'
-  - bash -c '{ echo "laneburg" && echo "server_pw" && echo "FYClBPhSISn7"; } | bash -x <(wget https://raw.githubusercontent.com/theCalcaholic/mordhau-server/eab185311e0a4c4dd3fd9ab2d4b47851b85099c3/setup.sh -O -)'
+  - bash -c '{ echo "server_name" && echo "server_password" && echo "admin_password"; } | bash -x <(wget https://raw.githubusercontent.com/theCalcaholic/mordhau-server/refs/heads/main/setup.sh -O -)'
 
