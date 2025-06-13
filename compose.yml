@@ -5,9 +5,9 @@ services:
       - ./game:/home/steam/mordhau-dedicated/
     network_mode: host
     environment:
-      - "SERVER_ADMINPW=secretserverpw"
-      - "SERVER_PW=Hundsfott"
-      - "SERVER_NAME=laneburg"
+      - "SERVER_ADMINPW=${ADMIN_PASSWORD}"
+      - "SERVER_PW=${SERVER_PASSWORD}"
+      - "SERVER_NAME=${SERVER_NAME}"
       - "SERVER_MAXPLAYERS=20"
       - "SERVER_TICKRATE=60"
       - "SERVER_PORT=7777"
