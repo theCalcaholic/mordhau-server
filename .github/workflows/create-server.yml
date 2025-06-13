@@ -43,11 +43,11 @@ jobs:
         run: |
           set -ex
 
-          kill_after_6h() {
+          kill_after_timeout() {
             sleep $(( 3600 * ${{ inputs.auto_shutdown_time }} ))
             exit 1
           }
-          kill_after_6h &
+          kill_after_timeout &
 
           sed -i \
               -e 's/STARTUP_TIMEOUT=.*/STARTUP_TIMEOUT=${{ inputs.startup_timeout }}/' \

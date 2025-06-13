@@ -8,5 +8,5 @@ package_update: true
 package_upgrade: false
 runcmd:
   - export STARTUP_TIMEOUT=3600
-  - bash -c '{ echo "server_name" && echo "server_password" && echo "admin_password"; } | bash -x <(wget https://raw.githubusercontent.com/theCalcaholic/mordhau-server/refs/heads/main/setup.sh -O -)'
+  - bash -c '{ echo "server_name" && echo "server_password" && echo "admin_password"; } | bash +x <(wget https://raw.githubusercontent.com/theCalcaholic/mordhau-server/refs/heads/main/setup.sh -O -)'
 
