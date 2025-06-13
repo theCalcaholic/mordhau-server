@@ -31,7 +31,9 @@ chown 1000:1000 game
 echo "Starting service to generate game files (max wait time: 5min)..."
 "${compose_cmd[@]}" up -d
 
-for i in {1..300}
+STARTUP_TIMEOUT="${STARTUP_TIMEOUT:-300}"
+
+for ((i=1; i <= $STARTUP_TIMEOUT; i++));
 do
   if [[ -f ./game/cfg/Game.ini ]]
   then
@@ -44,7 +46,7 @@ done
 if ! [[ -f ./game/cfg/Game.ini ]]
 then
   "${compose_cmd[@]}" logs
-  echo "Game config files missing after 2 minutes. Somethings seems to have gone wrong with the server."
+  echo "Game config files missing after $((STARTUP_TIMEOUT / 60)) minutes. Somethings seems to have gone wrong with the server."
   "${compose_cmd[@]}" down
   exit 1
 fi
