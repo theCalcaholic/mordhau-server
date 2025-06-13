@@ -25,6 +25,13 @@ jobs:
       - name: Start Server
         run: |
           set -ex
+
+          kill_after_6h() {
+            sleep $(( 3600 * 6 ))
+            exit 1
+          }
+          kill_after_6h &
+
           hcloud=(docker run --rm -v "$PWD:/workingdir" -w /workingdir -e HCLOUD_TOKEN hetznercloud/cli:latest)
           "${hcloud[@]}" server create \
                         --name mordhau \
