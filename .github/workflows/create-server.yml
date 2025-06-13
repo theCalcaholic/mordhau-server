@@ -59,7 +59,7 @@ jobs:
           hcloud=(docker run --rm -v "$PWD:/workingdir" -w /workingdir -e HCLOUD_TOKEN hetznercloud/cli:latest)
           "${hcloud[@]}" server create \
                         --name mordhau \
-                        --type cpx31 \
+                        --type ccx23 \
                         --image opensuse-15 \
                         --datacenter nbg1-dc3 \
                         --ssh-key "${SSH_KEY_NAME_CICD}" \
