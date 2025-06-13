@@ -45,9 +45,8 @@ jobs:
 
           kill_after_timeout() {
             sleep $(( 3600 * ${{ inputs.auto_shutdown_time }} ))
-            exit 1
+            exit 0
           }
-          kill_after_timeout &
 
           sed -i \
               -e 's/STARTUP_TIMEOUT=.*/STARTUP_TIMEOUT=${{ inputs.startup_timeout }}/' \
@@ -80,10 +79,14 @@ jobs:
             sleep 1
           done
 
-          while true;
-          do
-            "${SSH[@]}" tail -f /var/log/cloud-init-output.log || :;
-          done
+          {
+            while true;
+            do
+              "${SSH[@]}" tail -f /var/log/cloud-init-output.log || :;
+            done
+          } &
+
+          kill_after_timeout
       - name: Terminate Server
         if: ${{ always() }}
         run: |
