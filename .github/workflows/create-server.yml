@@ -1,0 +1,58 @@
+name: 'Start Server'
+on:
+  workflow_dispatch:
+    inputs:
+      startup_timeout:
+        description: 'maximum time to wait for server startup'
+        required: false
+        default: 1200
+        type: number
+jobs:
+  start_server:
+    environment: default
+    runs-on: ubuntu-latest
+    env:
+      SSH_KEY_NAME_CICD: ${{ vars.SSH_KEY_NAME_CICD }}
+      SSH_KEY_NAME_ADMIN: ${{ vars.SSH_KEY_NAME_ADMIN }}
+      SSH_KEY_CICD: ${{ secrets.SSH_KEY_CICD }}
+      HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Start Server
+        run: |
+          set -ex
+          hcloud=(docker run --rm -v "$PWD:/workingdir" -w /workingdir -e HCLOUD_TOKEN hetznercloud/cli:latest)
+          "${hcloud[@]}" server create \
+                        --name mordhau \
+                        --type cpx21 \
+                        --image opensuse-15 \
+                        --datacenter nbg1-dc3 \
+                        --ssh-key "${SSH_KEY_NAME_CICD}" \
+                        --ssh-key "${SSH_KEY_NAME_ADMIN}" \
+                        --start-after-create \
+                        --user-data-from-file cloudinit.yaml \
+                        --without-ipv6
+          SERVER_IP="$("${hcloud[@]}" server ip mordhau)"
+          cat <<<"$SSH_KEY_CICD" > ./ssh_key
+          chmod 0600 ./ssh_key
+          SSH=(ssh -i ./ssh_key -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" "root@${SERVER_IP}")
+          for i in {1..30}
+          do
+            if "${SSH[@]}" echo 'server online.'
+            then
+              break
+            fi
+            sleep 1
+          done
+          "${SSH[@]}" tail -f /var/log/cloud-init-output.log
+      - name: Terminate Server
+        if: ${{ always() }}
+        run: |
+          set -ex
+          hcloud=(docker run --rm -e HCLOUD_TOKEN hetznercloud/cli:latest)
+          "${hcloud[@]}" server delete mordhau
+
