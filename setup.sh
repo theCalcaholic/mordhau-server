@@ -39,6 +39,8 @@ do
   then
     break
   else
+    printf "%04d> " "$((STARTUP_TIMEOUT - i))"
+    "${compose_cmd[@]}" logs --tail 1 || :;
     sleep 1
   fi
 done
